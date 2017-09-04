@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/csxiaoyaojianxian/cschat/issues"
   },
-  "homepage": "https://github.com/csxiaoyaojianxian/cschat#readme"
+  "homepage": "https://github.com/csxiaoyaojianxian/cschat#readme",
+  "devDependencies": {
+    "webpack": "^3.5.5"
+  }
 }
