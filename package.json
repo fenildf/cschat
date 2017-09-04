@@ -1,0 +1,24 @@
+{
+  "name": "cschat",
+  "version": "1.0.0",
+  "description": "小智智能客服系统",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csxiaoyaojianxian/cschat.git"
+  },
+  "keywords": [
+    "客服",
+    "插件",
+    "websocket"
+  ],
+  "author": "victorsun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csxiaoyaojianxian/cschat/issues"
+  },
+  "homepage": "https://github.com/csxiaoyaojianxian/cschat#readme"
+}
