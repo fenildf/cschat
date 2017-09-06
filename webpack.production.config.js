@@ -3,13 +3,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var providePlugin = new webpack.ProvidePlugin({
-    $: 'jquery',
-    jQuery: 'jquery',
-    'window.jQuery': 'jquery',
-    'window.$': 'jquery',
-});
-
 module.exports = {
     entry: __dirname + "/app/main.js",
     output: {
@@ -34,7 +27,14 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
+              // 专供bootstrap方案使用的，忽略bootstrap自带的字体文件
+              test: /\.(woff|woff2|svg|eot|ttf)$/,
+              include: /glyphicons/,
+              loader: 'null-loader',
+            },
+            {
                 test: /\.css$/,
+                exclude: /node_modules|bootstrap/,
                 use: [
                     {
                         loader: "style-loader"
@@ -47,6 +47,13 @@ module.exports = {
                         loader: "postcss-loader"
                     }
                 ]
+            },
+            {
+                test: /\.css$/,
+                include: /bootstrap/,
+                use: [
+                    'style-loader', 'css-loader',
+                ],
             },
             {
                 test: /\.less$/,
@@ -64,17 +71,19 @@ module.exports = {
         ]
     },
     plugins: [
-
-        new webpack.BannerPlugin('版权所有，翻版必究'),
+        /* 全局shimming */
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            'window.$': 'jquery'
+        }),
+        new webpack.BannerPlugin('By victorsun, www.csxiaoyao.com, QQ:1724338257'),
         new HtmlWebpackPlugin({
             template: __dirname + "/app/index.tmpl.html"
         }),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin(),
-
         new ExtractTextPlugin("styles.css")
-    ],
-    externals:{
-        'jquery':'window.jQuery'
-    }
+    ]
 };
