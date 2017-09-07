@@ -1,0 +1,74 @@
+#pc {
+	position: fixed;
+	right: 0;
+
+	.container-fluid{
+		width: 400px;
+		height: 450px;
+		border: 1px solid #EEEEEE;
+		border-right: none;
+		background-color: #fff;
+		position: relative;
+		// 覆盖
+		padding-right: 0;
+		padding-left: 0;
+
+		.row{
+		    margin-right: 0px;
+			margin-left: 0px;
+		}
+
+		div:nth-child(1){
+			background-color: #d2e1f2;
+			height: 15%;
+
+
+		}
+		div:nth-child(2){
+			background-color: #fff;
+			height: 65%;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			// 滚动条样式
+			scrollbar-arrow-color: #fff; /*三角箭头的颜色*/
+			scrollbar-face-color: #fff; /*立体滚动条的颜色（包括箭头部分的背景色）*/
+			scrollbar-3dlight-color: #fff; /*立体滚动条亮边的颜色*/
+			scrollbar-highlight-color: #fff; /*滚动条的高亮颜色（左阴影？）*/
+			scrollbar-shadow-color: #fff; /*立体滚动条阴影的颜色*/
+			scrollbar-darkshadow-color: #fff; /*立体滚动条外阴影的颜色*/
+			scrollbar-track-color: #fff; /*立体滚动条背景颜色*/
+			scrollbar-base-color: #fff; /*滚动条的基色*/
+			ul {
+				margin-top: 0;
+				margin-bottom: 0;
+				padding: 5px;
+			}
+			li {
+			    margin: 8px;
+				list-style: none;
+				white-space:normal; 
+		        word-break : break-all; 
+		        word-wrap: break-word;
+	            border-radius: 8px;
+			}
+			.from{
+				width: 60%;
+				margin-right: 40%;
+				background-color: red;
+			}
+			.to{
+				width: 60%;
+				margin-left: 40%;
+				background-color: blue;
+			}
+		}
+		div:nth-child(3){
+			background-color: #eff3f9;
+			height: 20%;
+
+		}
+
+
+	}
+	
+}
