@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-08 16:09:14
+* @Last Modified time: 2017-09-08 16:25:42
 */
 
 // 滚动条隐藏
@@ -42,3 +42,16 @@ function addFrom(val){
 	var ele = $("#pc .container-fluid>div:nth-child(2)");
 	ele[0].scrollTop = ele[0].scrollHeight;
 }
+
+
+
+
+
+
+/**
+ * test
+ */
+$("#btn").click(function(){
+	$("#pc").css("display","block");
+	$("#pc").animate({"right":"0"}, 500);
+});
