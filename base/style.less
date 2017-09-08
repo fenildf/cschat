@@ -16,35 +16,51 @@
 		.row{
 		    margin-right: 0px;
 			margin-left: 0px;
+			overflow: hidden;
 		}
-
-		div:nth-child(1){
+		// 标题
+		>div:nth-child(1){
 			background-color: #d2e1f2;
 			height: 15%;
-
+			>div{
+				height: 67px;
+				background-color: transparent;
+			}
+			div:nth-child(1){
+			    line-height: 67px;
+			    img {
+					width: 45px;
+					height: 45px;
+			    }
+			}
+			div:nth-child(2){
+				h4{
+					margin-top: 15px;
+					margin-bottom: 5px;
+				}
+				small {
+					color:#a7a7a7;
+				}
+			}
 
 		}
-		div:nth-child(2){
+		// 内容
+		>div:nth-child(2){
 			background-color: #fff;
 			height: 65%;
-			overflow-y: scroll;
+			overflow-y: auto;
 			overflow-x: hidden;
-			// 滚动条样式
-			scrollbar-arrow-color: #fff; /*三角箭头的颜色*/
-			scrollbar-face-color: #fff; /*立体滚动条的颜色（包括箭头部分的背景色）*/
-			scrollbar-3dlight-color: #fff; /*立体滚动条亮边的颜色*/
-			scrollbar-highlight-color: #fff; /*滚动条的高亮颜色（左阴影？）*/
-			scrollbar-shadow-color: #fff; /*立体滚动条阴影的颜色*/
-			scrollbar-darkshadow-color: #fff; /*立体滚动条外阴影的颜色*/
-			scrollbar-track-color: #fff; /*立体滚动条背景颜色*/
-			scrollbar-base-color: #fff; /*滚动条的基色*/
+			padding-right: 0;
+			
 			ul {
 				margin-top: 0;
 				margin-bottom: 0;
 				padding: 5px;
 			}
 			li {
+				color: #696969;
 			    margin: 8px;
+			    padding: 8px;
 				list-style: none;
 				white-space:normal; 
 		        word-break : break-all; 
@@ -54,17 +70,75 @@
 			.from{
 				width: 60%;
 				margin-right: 40%;
-				background-color: red;
+				background-color: #d7d7df;
+				position: relative;
+			}
+			.from::after{
+				content: ' ';
+				border-top: 5px solid transparent;
+				border-bottom: 5px solid transparent;
+				border-right: 8px solid #d7d7df;
+				position: absolute;
+				left: -8px;
+				top: 10px;
 			}
 			.to{
 				width: 60%;
-				margin-left: 40%;
-				background-color: blue;
+				margin-left: 27%;
+				background-color: #bde0f6;
+				position: relative;
+
+				img {
+					width: 32px;
+					height: 32px;
+					position: absolute;
+					top: 0px;
+					right: -43px;
+					border-radius: 16px;
+				}
+			}
+			.to::after{
+				content: ' ';
+				border-top: 5px solid transparent;
+				border-bottom: 5px solid transparent;
+				border-left: 8px solid #bde0f6;
+				position: absolute;
+				right: -8px;
+				top: 10px;
 			}
 		}
-		div:nth-child(3){
+		// 编辑区
+		>div:nth-child(3){
 			background-color: #eff3f9;
 			height: 20%;
+			>div {
+				background-color: transparent;
+			}
+			// 输入框
+			div:nth-child(1){
+				height: 55px;
+				padding-top: 5px;
+				padding-bottom: 5px;
+				textarea{
+					width: 100%;
+					height: 100%;
+					background-color: transparent;
+					border: none;
+					outline:none;
+					resize:none;
+				}
+			}
+			// 提交按钮
+			div:nth-child(3){
+				text-align: right;
+				padding-right: 7px;
+				button{
+					border: none;
+					padding-top: 5px;
+					padding-bottom: 5px;
+				}
+			}
+
 
 		}
 
