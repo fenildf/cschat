@@ -1,3 +1,17 @@
+#pc-img{
+	position: fixed;
+	right: 0;
+	img {
+		right: -40px;
+		position: absolute;
+		cursor: pointer;
+		
+	}
+	img:hover{
+		right: -18px;
+	}
+}
+
 #pc {
 	display: none;
 	position: fixed;
@@ -53,6 +67,11 @@
 			overflow-x: hidden;
 			padding-right: 0;
 			
+			.alert {
+				padding: 10px;
+				padding-right: 35px;
+				margin-bottom: 0;
+			}
 			ul {
 				margin-top: 0;
 				margin-bottom: 0;
@@ -106,6 +125,18 @@
 				position: absolute;
 				right: -8px;
 				top: 10px;
+			}
+			li.sys{
+				margin: 0 auto;
+				font-size: 12px;
+				color: #adacac;
+				background-color: #f5f5f5;
+				text-align: center;
+				width: max-content;
+				border-radius: 25px;
+				padding: 5px;
+				padding-left: 15px;
+				padding-right: 15px;
 			}
 		}
 		// 编辑区
