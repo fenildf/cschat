@@ -59,19 +59,29 @@
 			}
 
 		}
-		// 内容
+		// 置顶消息
 		>div:nth-child(2){
+			width: 100%;
+			position: absolute;
+			z-index: 9999;
+			
+			.alert {
+				width: 100%;
+				padding: 10px;
+				padding-right: 35px;
+				margin-bottom: 0;
+			    border-radius: 0;
+			}
+
+		}
+		// 内容
+		>div:nth-child(3){
 			background-color: #fff;
 			height: 65%;
 			overflow-y: auto;
 			overflow-x: hidden;
 			padding-right: 0;
 			
-			.alert {
-				padding: 10px;
-				padding-right: 35px;
-				margin-bottom: 0;
-			}
 			ul {
 				margin-top: 0;
 				margin-bottom: 0;
@@ -140,7 +150,7 @@
 			}
 		}
 		// 编辑区
-		>div:nth-child(3){
+		>div:nth-child(4){
 			background-color: #eff3f9;
 			height: 20%;
 			>div {
