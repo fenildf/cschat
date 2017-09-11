@@ -67,6 +67,10 @@ module.exports = {
                     },
                     'less-loader'
                 ]
+            },
+            {
+                test: /\.(png|jpg)$/,
+    　　　　　　loader: 'url-loader?limit=51200&name=images/[hash:8].[name].[ext]'
             }
         ]
     },
