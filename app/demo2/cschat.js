@@ -2,12 +2,57 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-11 20:03:58
+* @Last Modified time: 2017-09-11 09:48:01
 */
+
+import React, {Component} from 'react';
+// import config from './config.json';
+import './cschat.less';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+
+class CsChat extends Component{
+  render() {
+    return (
+        // {config.greetText}
+    <div>
+		<div id="pc-img">
+			<img src="xiaozhi01.png" />
+		</div>
+		<div id="pc">
+			<div className="container-fluid">
+				<div className="row">
+					<div className="col-xs-2">
+						<img src="xiaozhi02.png" height="46" width="46" alt="" />
+					</div>
+					<div className="col-xs-10">
+						<h4>小智智能客服</h4>
+						<small>颜值爆表，既能萌萌哒，又能。。。</small>
+
+					</div>
+
+				</div>
+				<div className="row"></div>
+				<div className="row">
+					<ul></ul>
+				</div>
+				<div className="row">
+					<div className="col-xs-12"><textarea className="userInput"></textarea></div>
+					<div className="col-xs-8"></div>
+					<div className="col-xs-4"><button className="btn btn-primary">发送</button></div>
+				</div>
+			</div>
+		</div>
+	</div>
+    );
+  }
+}
+
 /**
  * 初始化信息
  */
-var avatar = "http://www.csxiaoyao.com/src/img/logo.png";
+var avatar = "avatar.jpg";
 // 初始化消息内容
 function initMsg(){
 	addFrom("CS逍遥剑仙，你好呀，我是小智智能客服");
@@ -49,8 +94,7 @@ function getElements(){
 	// 浏览器可视区域高度
 	clientHeight = $(window).height();
 	// 小智头像
-	// xzAvatar = $("#pc-img img");
-	xzAvatar = $("#pc-img div");
+	xzAvatar = $("#pc-img img");
 	// 小智会话框
 	dialog = $("#pc");
 	// 置顶消息区域
@@ -207,3 +251,7 @@ function hideScroll(){
 	});
 
 })();
+
+export default CsChat
+
+
