@@ -2,57 +2,66 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-11 09:48:01
+* @Last Modified time: 2017-09-11 20:13:05
 */
 
-import React, {Component} from 'react';
-// import config from './config.json';
 import './cschat.less';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
-class CsChat extends Component{
-  render() {
-    return (
-        // {config.greetText}
-    <div>
-		<div id="pc-img">
-			<img src="xiaozhi01.png" />
-		</div>
-		<div id="pc">
-			<div className="container-fluid">
-				<div className="row">
-					<div className="col-xs-2">
-						<img src="xiaozhi02.png" height="46" width="46" alt="" />
-					</div>
-					<div className="col-xs-10">
-						<h4>小智智能客服</h4>
-						<small>颜值爆表，既能萌萌哒，又能。。。</small>
+// import HTML from 'app.html';
 
-					</div>
-
-				</div>
-				<div className="row"></div>
-				<div className="row">
-					<ul></ul>
-				</div>
-				<div className="row">
-					<div className="col-xs-12"><textarea className="userInput"></textarea></div>
-					<div className="col-xs-8"></div>
-					<div className="col-xs-4"><button className="btn btn-primary">发送</button></div>
-				</div>
+var HTML = `
+<div id="pc-img">
+	<!-- <img src="xiaozhi01.png" /> -->
+	<div></div>
+</div>
+<div id="pc">
+	<div class="container-fluid">
+		<!-- 标题 start -->
+		<div class="row">
+			<div class="col-xs-2">
+				<!-- <img src="xiaozhi02.png" height="46" width="46" alt="" /> -->
+				<div></div>
 			</div>
-		</div>
-	</div>
-    );
-  }
-}
+			<div class="col-xs-10">
+				<h4>小智智能客服</h4>
+				<small>颜值爆表，既能萌萌哒，又能。。。</small>
 
+			</div>
+
+		</div>
+		<!-- 标题 end -->
+		<!-- 置顶消息 start -->
+		<div class="row"></div>
+		<!-- 置顶消息 end -->
+		<!-- 内容 start -->
+		<div class="row">
+			<ul>
+				<!-- <li class="from">...</li>
+				<li class="to">...<img src="avatar.jpg" alt="avatar"></li>
+				<li class="sys">...</li> -->
+			</ul>
+		</div>
+		<!-- 内容 end -->
+		<!-- 编辑区 start -->
+		<div class="row">
+			<!-- 编辑框 -->
+			<div class="col-xs-12"><textarea class="userInput"></textarea></div>
+			<!-- 功能按钮 -->
+			<div class="col-xs-8"></div>
+			<!-- 提交按钮 -->
+			<div class="col-xs-4"><button class="btn btn-primary">发送</button></div>
+		</div>
+		<!-- 编辑区 end -->
+	</div>
+</div>
+`;
 /**
  * 初始化信息
  */
-var avatar = "avatar.jpg";
+var avatar = "http://www.csxiaoyao.com/src/img/logo.png";
 // 初始化消息内容
 function initMsg(){
 	addFrom("CS逍遥剑仙，你好呀，我是小智智能客服");
@@ -80,7 +89,7 @@ var xzAvatar;
 // 小智会话框
 var dialog;
 // 置顶消息区域
-var alertArea
+var alertArea;
 // 内容区
 var eleContent;
 // 消息列表 ul
@@ -94,7 +103,7 @@ function getElements(){
 	// 浏览器可视区域高度
 	clientHeight = $(window).height();
 	// 小智头像
-	xzAvatar = $("#pc-img img");
+	xzAvatar = $("#pc-img div");
 	// 小智会话框
 	dialog = $("#pc");
 	// 置顶消息区域
@@ -108,7 +117,6 @@ function getElements(){
 	// 用户输入框
 	inputUser = $(".userInput");
 }
-getElements();
 
 // 前端添加置顶消息内容
 function addTopMsg(val){
@@ -192,6 +200,11 @@ function hideScroll(){
 
 // 初始化，加载数据
 (function init(){
+	// 插入html
+	$("body").append(HTML);
+
+	// 获取元素
+	getElements();
 
 	// 加载布局配置
 	load();
@@ -251,7 +264,3 @@ function hideScroll(){
 	});
 
 })();
-
-export default CsChat
-
-

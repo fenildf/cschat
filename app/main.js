@@ -89,7 +89,7 @@ var xzAvatar;
 // 小智会话框
 var dialog;
 // 置顶消息区域
-var alertArea
+var alertArea;
 // 内容区
 var eleContent;
 // 消息列表 ul

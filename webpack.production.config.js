@@ -7,7 +7,7 @@ module.exports = {
     entry: __dirname + "/app/main.js",
     output: {
         path: __dirname + "/build",
-        filename: "[name]-[hash].js",
+        filename: "[name]-[hash:8].js",
         chunkFilename:'chunk.[name].js'
     },
     devtool: 'none',
@@ -70,7 +70,7 @@ module.exports = {
             },
             {
                 test: /\.(png|jpg)$/,
-    　　　　　　loader: 'url-loader?limit=51200&name=images/[hash:8].[name].[ext]'
+                loader: 'url-loader?limit=51200&name=images/[hash:8].[name].[ext]'
             }
         ]
     },

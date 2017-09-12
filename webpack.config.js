@@ -24,10 +24,10 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-              // 专供bootstrap方案使用的，忽略bootstrap自带的字体文件
-              test: /\.(woff|woff2|svg|eot|ttf)$/,
-              include: /glyphicons/,
-              loader: 'null-loader',
+                // 专供bootstrap方案使用的，忽略bootstrap自带的字体文件
+                test: /\.(woff|woff2|svg|eot|ttf)$/,
+                include: /glyphicons/,
+                loader: 'null-loader',
             },
             {
                 test: /\.css$/,
@@ -66,8 +66,9 @@ module.exports = {
                 ]
             },
             {
+                // css 中小于 50kb 的图片转换为base64
                 test: /\.(png|jpg)$/,
-    　　　　　　loader: 'url-loader?limit=51200&name=images/[hash:8].[name].[ext]'
+                loader: 'url-loader?limit=51200&name=images/[hash:8].[name].[ext]'
             }
         ]
     },
