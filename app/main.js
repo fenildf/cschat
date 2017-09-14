@@ -6,4 +6,6 @@
 */
 import CsChat from './cschat';
 // "http://www.csxiaoyao.com/src/img/logo.png"
-CsChat.init();
+
+let csChat = new CsChat();
+// csChat.test();

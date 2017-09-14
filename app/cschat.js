@@ -13,11 +13,32 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 // const CsChat = {
 class CsChat {
 	constructor(avatar,uid) {  // 构造函数
-		this.avatar : avatar,
-		this.uid : uid
-	}
+		this.avatar = avatar;
+		this.uid = uid;
+		this.init();
 
-	tpl : `
+	}
+	
+	
+	/**
+	 * 页面初始化
+	 * ---------------------------------------------------------------
+	 */
+	init(){
+		// 初始化模板
+		this.initTpl();
+		// 初始化元素
+		this.getElements();
+		// 初始化页面布局
+		this.initLayout();
+		// 初始化事件
+		this.initEvent();
+		// 初始化数据
+		// this.initMsg();
+	}
+	// 初始化模板
+	initTpl(){
+		const tpl = `
 			<div id="pc-img">
 				<!-- <img src="xiaozhi01.png" /> -->
 				<div></div>
@@ -62,32 +83,31 @@ class CsChat {
 					<!-- 编辑区 end -->
 				</div>
 			</div>
-		`,
-	/**
-	 * 初始化信息
-	 */
+		`;
+		// 插入html
+		$("body").append(tpl);
+	}
+	// 获取页面元素
+	getElements() {
+		this.xzAvatar = $("#pc-img div"); // 小智头像
+		this.dialog = $("#pc"); // 小智会话框
+		this.alertArea = $("#pc .container-fluid>.row:nth-child(2)"); // 置顶消息区域
+		this.eleContent = $("#pc .container-fluid>.row:nth-child(3)"); // 内容区
+		this.ul = $("#pc .container-fluid>.row:nth-child(3) ul"); // 消息列表 ul
+		this.btnSubmit =  $("#pc .row:nth-child(4) button:nth-child(1)"); // 提交按钮
+		this.inputUser = $(".userInput"); // 用户输入框
+	}
 	
-	// jQuery elements
-	clientHeight : {}, // 浏览器可视区域高度
-	xzAvatar : {}, // 小智头像
-	dialog : {}, // 小智会话框
-	alertArea : {}, // 置顶消息区域
-	eleContent : {}, // 内容区
-	ul : {}, // 消息列表 ul
-	btnSubmit : {}, // 提交按钮
-	inputUser : {}, // 用户输入框
-
-	getElements : () => {
-		clientHeight = $(window).height(); // 浏览器可视区域高度
-		xzAvatar = $("#pc-img div"); // 小智头像
-		dialog = $("#pc"); // 小智会话框
-		alertArea = $("#pc .container-fluid>.row:nth-child(2)"); // 置顶消息区域
-		eleContent = $("#pc .container-fluid>.row:nth-child(3)"); // 内容区
-		ul = $("#pc .container-fluid>.row:nth-child(3) ul"); // 消息列表 ul
-		btnSubmit =  $("#pc .row:nth-child(4) button:nth-child(1)"); // 提交按钮
-		inputUser = $(".userInput"); // 用户输入框
-	},
-
+	// 初始化页面布局
+	initLayout(){
+		this.clientHeight = $(window).height(); // 浏览器可视区域高度
+		let imgHeight = ( this.clientHeight - this.xzAvatar.height() ) / 2 - 70;
+		let dialogHeight =  ( this.clientHeight - this.dialog.height() ) / 2;
+		this.xzAvatar.css("top",imgHeight);
+		this.dialog.css("top",dialogHeight);
+		// 隐藏滚动条
+		this.eleContent.css("marginRight","-"+(this.eleContent.width()-this.ul.width())+"px");
+	}
 	// 初始化消息内容
 	initMsg() {
 		addFrom("CS逍遥剑仙，你好呀，我是小智智能客服");
@@ -102,154 +122,134 @@ class CsChat {
 		var top2 = "欢迎使用小智智能客服，小智智能客服，小智智能客服，小智智能客服";
 		addTopMsg(top1);
 		addTopMsg(top2);
-	},
-
-	// 前端添加置顶消息内容
+	}
+	initEvent(){
+		// 设置小智头像点击事件
+		const _this = this;
+		this.xzAvatar.click(function(_this){
+			console.log(_this);
+			console.log(_this.dialog);
+			this.dialog.css("display","block");
+			this.dialog.animate({"right":"0"}, 500);
+			this.msgAdjust();
+		});
+		// 提交按钮
+		this.btnSubmit.click(function(){
+			this.addTo(this.inputUser.val(),this.avatar);
+			this.addFrom();
+		});
+		// 监听回车按键发送消息
+		$(document).keydown(function(event){
+			let e = event || window.event || arguments.callee.caller.arguments[0];
+			if(e && e.keyCode==13 && e.target.tagName == "TEXTAREA" && e.target.className == "userInput"){
+				// 阻止换行操作，防止 textarea 中多一个换行符
+				e.preventDefault();
+				this.btnSubmit.click();
+			}
+		});
+		// 点击alert关闭按钮
+		this.alertArea.on('click', function(event){
+		    // 【 事件委托 】
+		    let ele = event.target?event.target:event.srcElement;
+		    if(ele.tagName === "SPAN" && ele.innerHTML == "×"){
+		    	// 获取最细的置顶消息内容框
+				this.alertArea.find(".alert").on('closed.bs.alert', function(){
+		    		this.msgAdjust();
+		    	});
+		    }
+		});
+		// 窗口大小改变
+		$(window).on("resize",function (e) {
+			this.initLayout();
+		});
+		// 关闭dialog
+		$(document).on("click",function (e) {
+			if (e.target!= this.xzAvatar[0] && e.target!= this.dialog[0] && !$.contains(pop, e.target)){
+				this.dialog.fadeOut(500,function(){
+					this.dialog.css("right","-400px");
+				});
+			}
+		});
+	}
+	/*
+	 * ---------------------------------------------------------------
+	 */
+	
+	/**
+	 * 公共方法
+	 * ---------------------------------------------------------------
+	 */
+	// 置顶消息对 ul 的位置调整
+	msgAdjust(){
+		let height = 0;
+		// 获取最细的置顶消息内容框
+		const alertContent = this.alertArea.find(".alert");
+		this.alertContent.each(function(key,val){
+			height += val.clientHeight;
+		});
+		this.ul.animate({"marginTop":height + "px"},500);
+	}
+	// 滚动到最新消息
+	scrollToLatest(){
+		this.eleContent[0].scrollTop = this.eleContent[0].scrollHeight;
+	}
+	/**
+	 * ---------------------------------------------------------------
+	 */
+	
+	/**
+	 * 前端对4种消息的 DOM 操作
+	 * ---------------------------------------------------------------
+	 */
+	// 添加置顶消息
 	addTopMsg(val){
 		val = val? val : "当前聊天人数过多……";
-		var content = 
+		const content = 
 			`<div class="alert alert-warning alert-dismissible pull-left fade in" role="alert">
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
 				<strong>置顶消息:</strong> `+ val +`
 			</div>`;
 		// 追加内容
-		alertArea.prepend(content);
+		this.alertArea.prepend(content);
 		// 调整内容区域内容位置
-		msgAdjust();
-	},
-	// 置顶消息对 ul 的位置调整
-	msgAdjust(){
-		var height = 0;
-		// 获取最细的置顶消息内容框
-		var alertContent = alertArea.find(".alert");
-		alertContent.each(function(key,val){
-			height += val.clientHeight;
-		});
-		ul.animate({"marginTop":height + "px"},500);
-	},
-
-	// 前端添加用户发送消息内容
+		this.msgAdjust();
+	}
+	// 添加用户发送消息
 	addTo(val,avatar){
 		if(!val){
 			alert("输入内容不能为空!");
 			return;
 		}
-		var content = '<li class="to">'+ val + '<img src="' + avatar + '" alt="avatar" /></li>';
+		const content = '<li class="to">'+ val + '<img src="' + avatar + '" alt="avatar" /></li>';
 		// 追加内容
-		ul.append(content);
+		this.ul.append(content);
 		// 滚动到顶部
-		scrollToLatest();
+		this.scrollToLatest();
 		// 清空输入框
-		inputUser.val("");
-	},
-	// 前端添加小智发送消息内容
+		this.inputUser.val("");
+	}
+	// 添加小智发送消息
 	addFrom(val){
 		val = val? val : "系统出故障了哦!";
-		var content = '<li class="from">' + val + '</li>';
+		const content = '<li class="from">' + val + '</li>';
 		// 追加内容
-		ul.append(content);
+		this.ul.append(content);
 		// 滚动到最新消息
-		scrollToLatest();
-	},
-
-	// 前端添加系统消息内容
+		this.scrollToLatest();
+	}
+	// 添加系统消息
 	addSysMsg(val){
 		val = val? val : "系统出故障了哦!";
-		var content = '<li class="sys"><strong>系统消息：</strong>' + val + '</li>';
+		const content = '<li class="sys"><strong>系统消息：</strong>' + val + '</li>';
 		// 追加内容
-		ul.append(content);
+		this.ul.append(content);
 		// 滚动到最新消息
-		scrollToLatest();
-	},
-
-	// 滚动到最新消息
-	scrollToLatest(){
-		eleContent[0].scrollTop = eleContent[0].scrollHeight;
-	},
-
-	// 加载配置，布局等
-	load(){
-		var imgHeight = ( clientHeight - xzAvatar.height() ) / 2 - 70;
-		var dialogHeight =  ( clientHeight - dialog.height() ) / 2;
-		xzAvatar.css("top",imgHeight);
-		dialog.css("top",dialogHeight);
-		// 隐藏滚动条
-		hideScroll();
-	},
-
-	// 滚动条隐藏
-	hideScroll(){
-		eleContent.css("marginRight","-"+(eleContent.width()-ul.width())+"px");
-	},
-
-
-
-	// 初始化，加载数据
-	init(){
-		// 插入html
-		$("body").append(this.tpl);
-
-		// 获取元素
-		this.getElements();
-
-		// 加载布局配置
-		this.load();
-
-		// 初始化数据
-		this.initMsg();
-
-		// 设置小智头像点击事件
-		this.xzAvatar.click(function(){
-			this.dialog.css("display","block");
-			this.dialog.animate({"right":"0"}, 500);
-			this.msgAdjust();
-		});
-
-		// 提交按钮
-		this.btnSubmit.click(function(){
-			this.addTo(inputUser.val(),this.avatar);
-			this.addFrom();
-		});
-		// 监听回车按键发送消息
-		$(document).keydown(function(event){
-			var e = event || window.event || arguments.callee.caller.arguments[0];
-			if(e && e.keyCode==13 && e.target.tagName == "TEXTAREA" && e.target.className == "userInput"){
-				// 阻止换行操作，防止 textarea 中多一个换行符
-				e.preventDefault();
-				btnSubmit.click();
-			}
-		});
-
-		// 点击alert关闭按钮
-		alertArea.on('click', function(event){
-		    // 【 事件委托 】
-		    var ele = event.target?event.target:event.srcElement;
-		    if(ele.tagName === "SPAN" && ele.innerHTML == "×"){
-		    	// 获取最细的置顶消息内容框
-				alertArea.find(".alert").on('closed.bs.alert', function(){
-		    		msgAdjust();
-		    	});
-		    }
-		});
-
-		// 窗口大小改变
-		$(window).on("resize",function (e) {
-			getElements();
-			load();
-		});
-
-		// 关闭dialog
-		$(document).on("click",function (e) {
-			var pop = dialog[0];
-			var avatar = xzAvatar[0];
-			if (e.target!= avatar && e.target!= pop && !$.contains(pop, e.target)){
-				dialog.fadeOut(500,function(){
-					dialog.css("right","-400px");
-				});
-			}
-		});
-
+		this.scrollToLatest();
 	}
+	/**
+	 * ---------------------------------------------------------------
+	 */
+	
 
 };
 
