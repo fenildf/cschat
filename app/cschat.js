@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-13 11:06:22
+* @Last Modified time: 2017-09-14 11:23:18
 */
 
 import './cschat.less';
@@ -10,6 +10,8 @@ import './cschat.less';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
+import config from './config.json';
+import message from './test.json';
 // const CsChat = {
 class CsChat {
 	constructor(avatar,uid) {  // 构造函数
@@ -18,7 +20,6 @@ class CsChat {
 		this.init();
 
 	}
-	
 	
 	/**
 	 * 页面初始化
@@ -34,7 +35,7 @@ class CsChat {
 		// 初始化事件
 		this.initEvent();
 		// 初始化数据
-		// this.initMsg();
+		this.initMsg();
 	}
 	// 初始化模板
 	initTpl(){
@@ -52,11 +53,9 @@ class CsChat {
 							<div></div>
 						</div>
 						<div class="col-xs-10">
-							<h4>小智智能客服</h4>
-							<small>颜值爆表，既能萌萌哒，又能。。。</small>
-
+							<h4>${config.name}</h4>
+							<small>${config.description}</small>
 						</div>
-
 					</div>
 					<!-- 标题 end -->
 					<!-- 置顶消息 start -->
@@ -110,36 +109,41 @@ class CsChat {
 	}
 	// 初始化消息内容
 	initMsg() {
-		addFrom("CS逍遥剑仙，你好呀，我是小智智能客服");
-		addFrom("上个月你一共参加了20场排位赛，胜率80%，在好友中排名第一，再接再厉哦！");
-		addTo("请教对局技巧",avatar);
-		addSysMsg("小智很厉害的哦~~~");
-		addFrom("我们为您准备了一份秘籍……");
-		addTo("我想知道我的好友的战绩",avatar);
-		addFrom("<a href='http://www.csxiaoyao.com'>http://www.csxiaoyao.com</a>");
-		addTo("谢谢啊，你好厉害啊，你叫什么名字呀？",avatar);
-		var top1 = "欢迎使用小智";
-		var top2 = "欢迎使用小智智能客服，小智智能客服，小智智能客服，小智智能客服";
-		addTopMsg(top1);
-		addTopMsg(top2);
+		const initMsg = config.initMsg;
+		const msg = message.msg;
+		initMsg.concat(msg).forEach( (ele)=> {
+			switch(ele.type){
+				case "top":
+					this.addTopMsg(ele.msg);
+					break;
+				case "sys":
+					this.addSysMsg(ele.msg);
+					break;
+				case "from":
+					this.addFrom(ele.msg);
+					break;
+				case "to":
+					this.addTo(ele.msg,this.avatar);
+					break;
+			}
+
+		});
 	}
 	initEvent(){
 		// 设置小智头像点击事件
 		const _this = this;
-		this.xzAvatar.click(function(_this){
-			console.log(_this);
-			console.log(_this.dialog);
+		this.xzAvatar.click(()=>{
 			this.dialog.css("display","block");
 			this.dialog.animate({"right":"0"}, 500);
 			this.msgAdjust();
 		});
 		// 提交按钮
-		this.btnSubmit.click(function(){
+		this.btnSubmit.click(()=>{
 			this.addTo(this.inputUser.val(),this.avatar);
 			this.addFrom();
 		});
 		// 监听回车按键发送消息
-		$(document).keydown(function(event){
+		$(document).keydown((event)=>{
 			let e = event || window.event || arguments.callee.caller.arguments[0];
 			if(e && e.keyCode==13 && e.target.tagName == "TEXTAREA" && e.target.className == "userInput"){
 				// 阻止换行操作，防止 textarea 中多一个换行符
@@ -148,24 +152,24 @@ class CsChat {
 			}
 		});
 		// 点击alert关闭按钮
-		this.alertArea.on('click', function(event){
+		this.alertArea.on('click', (event)=>{
 		    // 【 事件委托 】
 		    let ele = event.target?event.target:event.srcElement;
 		    if(ele.tagName === "SPAN" && ele.innerHTML == "×"){
 		    	// 获取最细的置顶消息内容框
-				this.alertArea.find(".alert").on('closed.bs.alert', function(){
+				this.alertArea.find(".alert").on('closed.bs.alert', ()=>{
 		    		this.msgAdjust();
 		    	});
 		    }
 		});
 		// 窗口大小改变
-		$(window).on("resize",function (e) {
+		$(window).on("resize",()=>{
 			this.initLayout();
 		});
 		// 关闭dialog
-		$(document).on("click",function (e) {
-			if (e.target!= this.xzAvatar[0] && e.target!= this.dialog[0] && !$.contains(pop, e.target)){
-				this.dialog.fadeOut(500,function(){
+		$(document).on("click",(e)=>{
+			if (e.target!= this.xzAvatar[0] && e.target!= this.dialog[0] && !$.contains(this.dialog[0], e.target)){
+				this.dialog.fadeOut(500,()=>{
 					this.dialog.css("right","-400px");
 				});
 			}
@@ -184,7 +188,7 @@ class CsChat {
 		let height = 0;
 		// 获取最细的置顶消息内容框
 		const alertContent = this.alertArea.find(".alert");
-		this.alertContent.each(function(key,val){
+		alertContent.each(function(key,val){
 			height += val.clientHeight;
 		});
 		this.ul.animate({"marginTop":height + "px"},500);
@@ -204,16 +208,33 @@ class CsChat {
 	// 添加置顶消息
 	addTopMsg(val){
 		val = val? val : "当前聊天人数过多……";
-		const content = 
+		let content = 
 			`<div class="alert alert-warning alert-dismissible pull-left fade in" role="alert">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-				<strong>置顶消息:</strong> `+ val +`
-			</div>`;
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>`;
+		if(config.showMsgType === "true"){
+			content += `<strong>置顶消息:</strong> `;
+		}
+		content = content + val + `</div>`;
 		// 追加内容
 		this.alertArea.prepend(content);
 		// 调整内容区域内容位置
 		this.msgAdjust();
 	}
+
+	// 添加系统消息
+	addSysMsg(val){
+		val = val? val : "系统出故障了哦!";
+		let content = '<li class="sys">';
+		if(config.showMsgType == "true"){
+			content += '<strong>系统消息：</strong> ';
+		}
+		content = content + val + '</li>';
+		// 追加内容
+		this.ul.append(content);
+		// 滚动到最新消息
+		this.scrollToLatest();
+	}
+
 	// 添加用户发送消息
 	addTo(val,avatar){
 		if(!val){
@@ -223,24 +244,15 @@ class CsChat {
 		const content = '<li class="to">'+ val + '<img src="' + avatar + '" alt="avatar" /></li>';
 		// 追加内容
 		this.ul.append(content);
-		// 滚动到顶部
-		this.scrollToLatest();
 		// 清空输入框
 		this.inputUser.val("");
+		// 滚动到顶部
+		this.scrollToLatest();
 	}
 	// 添加小智发送消息
 	addFrom(val){
 		val = val? val : "系统出故障了哦!";
 		const content = '<li class="from">' + val + '</li>';
-		// 追加内容
-		this.ul.append(content);
-		// 滚动到最新消息
-		this.scrollToLatest();
-	}
-	// 添加系统消息
-	addSysMsg(val){
-		val = val? val : "系统出故障了哦!";
-		const content = '<li class="sys"><strong>系统消息：</strong>' + val + '</li>';
 		// 追加内容
 		this.ul.append(content);
 		// 滚动到最新消息

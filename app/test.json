@@ -1,0 +1,33 @@
+{
+	"msg":[
+		{
+			"type":"from",
+			"msg":"上个月你一共参加了20场排位赛，胜率80%，在好友中排名第一，再接再厉哦！",
+			"time":""
+		},{
+			"type":"to",
+			"msg":"请教对局技巧",
+			"time":""
+		},{
+			"type":"from",
+			"msg":"我为您准备了一份秘籍……",
+			"time":""
+		},{
+			"type":"to",
+			"msg":"我想知道我的好友的战绩",
+			"time":""
+		},{
+			"type":"from",
+			"msg":"<a href='http://www.csxiaoyao.com'>http://www.csxiaoyao.com</a>",
+			"time":""
+		},{
+			"type":"to",
+			"msg":"谢谢啊，你好厉害啊，你叫什么名字呀？",
+			"time":""
+		},{
+			"type":"top",
+			"msg":"欢迎使用小智智能客服，小智智能客服24小时为您服务！",
+			"time":""
+		}
+	]
+}

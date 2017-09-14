@@ -1,0 +1,25 @@
+{
+	"name":"小智智能客服",
+	"description":"颜值爆表，既能萌萌哒，又能。。。",
+	"service":"",
+	"url":"",
+	"server":"localhost",
+	"port":"8080",
+	"hbInterval":"5",
+	"showMsgType":"true",
+	"initMsg":[
+		{
+			"type":"top",
+			"msg":"欢迎使用小智",
+			"time":""
+		},{
+			"type":"from",
+			"msg":"CS逍遥剑仙，你好呀，我是小智智能客服",
+			"time":""
+		},{
+			"type":"sys",
+			"msg":"小智很厉害的哦~~~",
+			"time":""
+		}
+	]
+}
