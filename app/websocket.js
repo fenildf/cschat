@@ -1,180 +1,125 @@
-'use strict';
-if (!window.rt_push_main) {
-    if (window.WEB_SOCKET_LOGGER) {
-        window.logger = WEB_SOCKET_LOGGER;
-    } else if (window.console && window.console.log && window.console.error) {
-        window.logger = window.console;
-    } else {
-        window.logger = {log: function(msg){}, error: function(msg){}};
-    }
-    
-    window.rt_push_main = {
-        connection_state : 0,   //0-unconnected, 1-connecting, 2-connected
-        reconnect_timeout : 2,
-        ws_url : "wss://ws.game.qq.com/rtpush/websocket/",
-        base_url : '//ossweb-img.qq.com/images/clientpop/js/rtpush/',
-        params : {appid:'', openid:'', uin:'', bid:'', scene:'', vurl:'', sign:'', timestamp:'', coloring:''},
-        isIE : function(ver){
-            var b = document.createElement('b')
-            b.innerHTML = '<!--[if IE ' + ver + ']><i></i><![endif]-->'
-            return b.getElementsByTagName('i').length === 1
-	    },
-        getCookie : function(key) {
-            var tmp, reg = new RegExp("(^| )"+key+"=([^;]*)(;|$)","gi");
-            if( tmp = reg.exec( unescape(document.cookie) ) )
-                return(tmp[2]);
-            return null;
-        },
-        loadScript : function(file, callback) {
-            var head=document.getElementsByTagName("head")[0];
-            var script= document.createElement('script');
-            script.type= 'text/javascript';
-            script.onload = script.onreadystatechange = function() {
-                if (!this.readyState || this.readyState === "loaded" || this.readyState === "complete" ) {
-                    script.onload = script.onreadystatechange = null;
-                    if (callback){
-                        callback();
-                    }
-                }
-            };
-            script.src= file;
-            head.appendChild(script);
-        },
-        getUinFromCookie : function() {
-            if (this.getCookie("skey")) {
-                return Number(this.getCookie("uin").substring(1)).toString();
-            }
-            return "";
-        },
-        getBidFromUrl : function() {
-            var host = window.location.hostname;
-            if (/^[0-9a-zA-Z.]+.qq.com$/.test(host)) {
-                if (host == 'act.daoju.qq.com') {
-                    var arr = window.location.pathname.split('/');
-                    return arr[2];
-                } else {
-                    var arr = host.split(".");
-                    return arr[0]; 
-                }
-            } else {
-                return "";
-            }
-        },
-        cutVurl : function(vurl) {
-            var pos = vurl.indexOf('://');
-            if (pos != -1) {
-                return vurl.substr(pos+3);
-            } else {
-                return;
-            }
-        },
-        setParam : function(name, value) {
-            if (this.params[name]) {
-                this.params[name] = value;
-            }
-        },
-        connect : function() {
-            if (this.connection_state == 0 && window.mosq) {
-                window.mosq.connect(
-                    this.ws_url, 
-                    this.params.bid, 
-                    this.params.scene, 
-                    this.params.uin, 
-                    this.params.sign, 
-                    this.params.timestamp,
-                    this.params.vurl + this.params.coloring);
-                this.connection_state = 1;
-                logger.log("connecting..." + '[' + Date() + ']' + ' ['+this.params.vurl+']');
-            }
-        },
-        disconnect : function() {
-            if (this.connection_state == 2 && window.mosq) {
-                window.mosq.disconnect();
-            }
-        },
-        init : function (_params) {
-            var self = this;
-            
-            //ignore IEs temporarily.
-            if (self.isIE()) {
-                return;
-            }
+/*
+* @Author: victorsun
+* @Date:   2017-09-15 10:03:16
+* @Last Modified by:   victorsun
+* @Last Modified time: 2017-09-15 16:47:55
+*/
 
-            //param check.
-            _params = _params || {};
-            self.params.appid = _params['appid'] || '';
-            self.params.openid = _params['openid'] || '';
-            self.params.uin = (self.params.appid != "" && self.params.openid != "") ? self.params.appid + "," + self.params.openid : self.getUinFromCookie();
-            self.params.bid = _params['bid'] || self.getBidFromUrl();
-            self.params.scene = _params['scene'] || 'webtips';
-            self.params.vurl = _params['vurl'] ? self.cutVurl(_params['vurl']) : (window.location.hostname + window.location.pathname);
-            self.params.sign = _params['sign'] || '';
-            self.params.timestamp = _params['timestamp'] || '';
-            self.params.coloring = _params['coloring'] ? '#' + _params['coloring'] : '';
-            if (self.params.uin == "" || self.params.bid == "" || self.params.scene == "" || self.params.vurl == "") {
-                logger.log("param error.");
-                return;
-            }
-        
-            //TODO::
-            if (self.params.vurl == 'lol.qq.com/client/client.shtml') {
-                self.params.uin = Math.floor(Math.random() * 100000000).toString();
-            }
-            
-            self.loadScript(self.base_url+'json2.js', function(){
-            self.loadScript(self.base_url+'swfobject.js', function(){
-            self.loadScript(self.base_url+'impl.min.js', function(){      
-                window.WEB_SOCKET_SWF_LOCATION = "http://"+self.params.bid+".qq.com/rtpush/WebSocketMain.swf";
-                window.WEB_SOCKET_DEBUG = true;
-                
-                rt_push_impl.init();
-                window.mosq = new Mosquitto();
-                window.mosq.onconnect = function(rc){
-                    self.connection_state = 2;
-                    logger.log('connected.' + '[' + Date() + ']');
-                    if (_params['onConnect'] && typeof _params.onConnect == 'function') {
-                        _params.onConnect();
-                    }
-                };
-                window.mosq.ondisconnect = function(rc){
-                    self.connection_state = 0;
-                    setTimeout(function(){
-                        if (_params['onDisconnect'] && typeof _params.onDisconnect == 'function') {
-                            _params.onDisconnect();
-                        } else {
-                            self.connect();
-                        }
-                    }, self.reconnect_timeout * 1000);
-                    logger.log("reconnect after " + self.reconnect_timeout + " seconds..." + '[' + Date() + ']');
-                    self.reconnect_timeout = self.reconnect_timeout * 2;
-                    if (self.reconnect_timeout >= 300) {
-                        self.reconnect_timeout = 300;
-                    }
-                };
-                window.mosq.onmessage = function(topic, payload, qos){
-                    var pl = JSON.parse(decodeURIComponent(payload));
-                    if (_params['onMessage'] && typeof _params.onMessage == 'function') {
-                        _params.onMessage(pl);
-                    }
-                };
-                window.mosq.onping = function() {
-                    if (_params['onPing'] && typeof _params.onPing == 'function') {
-                        _params.onPing();
-                    }
-                }
-                self.connect();
-            });
-            });
-            });
-        }
-    }
-    
-    if (window.location.host + window.location.pathname != 'lol.qq.com/act/a20150703msg/index.htm') {
-        if (window.RTPUSH_ACTIVE_CONNECT && typeof window.RTPUSH_ACTIVE_CONNECT === 'function') {
-            window.RTPUSH_ACTIVE_CONNECT();
-        } else {
-            window.rt_push_main.init({coloring : 'passive'});
-        }
-    }
+class WebSocket {
+	constructor(server) {  // 构造函数
+		this.ws = new WebSocket(server);
+		initWebsocketApi();
+	}
+
+	initWebsocketApi(){
+		/**
+		 * 【 API 】
+		 * 两种事件定义方式
+		 * ws.onopen = function(event){}
+		 * ws.addEventListener('open', function (event) {
+		 * 	  ws.send('Hello Server!');
+		 * });
+		 */
+		this.ws.onopen=function(event){
+			console.log("Connection open ...");
+		};
+
+		this.ws.onmessage = function(event) {
+			console.log("Received data: " + event.data);
+
+			if(typeof event.data === String) {
+				console.log("Received data string: " + event.data);
+			}
+			if(event.data instanceof ArrayBuffer){
+				var buffer = event.data;
+				console.log("Received arraybuffer: " + buffer);
+			}
+			/**
+			 * 可以使用binaryType属性，显式指定收到的二进制数据类型
+			 * 
+			// 收到的是 blob 数据
+			ws.binaryType = "blob";
+			console.log(event.data.size);
+			// 收到的是 ArrayBuffer 数据
+			ws.binaryType = "arraybuffer";
+			console.log(event.data.byteLength);
+			 */
+		};
+
+		this.ws.onclose = function(event) {
+			console.log("Connection closed ...");
+			console.log("服务器断开代码："+event.code);
+			console.log("断开理由："+event.reason);
+			console.log("wasClean："+event.wasClean);
+			ws.close();
+		};
+
+		this.ws.onerror=function(event){
+			console.log(event);
+		};
+	}
+
+	/**
+	 * 获取websocket状态
+	 */
+	getState(){
+		/**
+		 * 【 readyState 】
+		 * CONNECTING：值为0，表示正在连接
+		 * OPEN：值为1，表示连接成功，可以通信了
+		 * CLOSING：值为2，表示连接正在关闭
+		 * CLOSED：值为3，表示连接已经关闭，或者打开连接失败
+		 */
+		switch (this.ws.readyState) {
+		  case WebSocket.CONNECTING:
+		    alert("state:CONNECTING");
+		    break;
+		  case WebSocket.OPEN:
+		    alert("state:OPEN");
+		    break;
+		  case WebSocket.CLOSING:
+		    alert("state:CLOSING");
+		    break;
+		  case WebSocket.CLOSED:
+		    alert("state:CLOSED");
+		    break;
+		  default:
+		    // this never happens
+		    break;
+		}
+	}
+	
+
+	sendMsg(content){
+		/**
+		 * 1.发送文本
+		 */
+		this.ws.send(content);
+		/**
+		 * 2.发送 Blob 对象
+		 */
+		// var file = document.querySelector('input[type="file"]').files[0];
+		// ws.send(file);
+		/**
+		 * 3.发送 ArrayBuffer 对象
+		 * Sending canvas ImageData as ArrayBuffer
+		 * 实例对象的bufferedAmount属性，表示还有多少字节的二进制数据没有发送出去，可以用来判断发送是否结束
+		 */
+		// var img = canvas_context.getImageData(0, 0, 400, 320);
+		// var binary = new Uint8Array(img.data.length);
+		// for (var i = 0; i < img.data.length; i++) {
+		// 	binary[i] = img.data[i];
+		// }
+		// ws.send(binary.buffer);
+
+		// var data = new ArrayBuffer(10000000);
+		// socket.send(data);
+		// if (socket.bufferedAmount === 0) {
+		// 	// 发送完毕
+		// } else {
+		// 	// 发送还没结束
+		// }
+	}
 }
-/*  |xGv00|1e24f53dfbf31815d0ddb17ef88015cb */
+
+export default WebSocket;

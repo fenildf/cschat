@@ -3,7 +3,7 @@
 	"description":"颜值爆表，既能萌萌哒，又能。。。",
 	"service":"",
 	"url":"",
-	"server":"localhost",
+	"server":"ws://127.0.0.1:8000",
 	"port":"8080",
 	"hbInterval":"5",
 	"showMsgType":"true",

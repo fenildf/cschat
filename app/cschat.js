@@ -11,14 +11,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
 import config from './config.json';
+import websocket from './websocket.js';
+
 import message from './test.json';
-// const CsChat = {
+
 class CsChat {
 	constructor(avatar,uid) {  // 构造函数
 		this.avatar = avatar;
 		this.uid = uid;
 		this.init();
-
 	}
 	
 	/**
@@ -36,6 +37,8 @@ class CsChat {
 		this.initEvent();
 		// 初始化数据
 		this.initMsg();
+		// 初始化 websocket
+		this.initWebSocket();
 	}
 	// 初始化模板
 	initTpl(){
@@ -261,6 +264,10 @@ class CsChat {
 	/**
 	 * ---------------------------------------------------------------
 	 */
+	
+	initWebSocket(){
+		let ws = new websocket(config.server);
+	}
 	
 
 };
