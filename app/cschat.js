@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-14 11:23:18
+* @Last Modified time: 2017-09-15 21:38:54
 */
 
 import './cschat.less';
@@ -11,13 +11,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
 import config from './config.json';
-import websocket from './websocket.js';
 
 import message from './test.json';
 
+
 class CsChat {
 	constructor(avatar,uid) {  // 构造函数
+		// 是否启用此插件
+		this.open = config.open;
+		// 超时重连时间(s)
+		this.timeout = config.timeout;
+		// 心跳间隔(s)
+		this.hbInterval = config.hbInterval;
+
 		this.avatar = avatar;
+
 		this.uid = uid;
 		this.init();
 	}
@@ -27,18 +35,26 @@ class CsChat {
 	 * ---------------------------------------------------------------
 	 */
 	init(){
-		// 初始化模板
-		this.initTpl();
-		// 初始化元素
-		this.getElements();
-		// 初始化页面布局
-		this.initLayout();
-		// 初始化事件
-		this.initEvent();
-		// 初始化数据
-		this.initMsg();
+
 		// 初始化 websocket
-		this.initWebSocket();
+		if(this.open){
+			this.initWebSocket();
+		}
+
+		// 支持websocket才会加载组件
+		if(this.open){
+			// 初始化模板
+			this.initTpl();
+			// 初始化元素
+			this.getElements();
+			// 初始化页面布局
+			this.initLayout();
+			// 初始化事件
+			this.initEvent();
+			// 初始化数据
+			this.initMsg();
+		}
+		
 	}
 	// 初始化模板
 	initTpl(){
@@ -142,8 +158,10 @@ class CsChat {
 		});
 		// 提交按钮
 		this.btnSubmit.click(()=>{
-			this.addTo(this.inputUser.val(),this.avatar);
-			this.addFrom();
+			let content = this.inputUser.val();
+			this.addTo(content,this.avatar);
+			// this.addFrom();
+			this.sendMsg(content);
 		});
 		// 监听回车按键发送消息
 		$(document).keydown((event)=>{
@@ -264,12 +282,90 @@ class CsChat {
 	/**
 	 * ---------------------------------------------------------------
 	 */
-	
+	// websocket 初始化
 	initWebSocket(){
-		let ws = new websocket(config.server);
-	}
-	
+		if (window.WebSocket) {
 
+			this.ws = new WebSocket(config.server);
+			// open
+			this.ws.onopen = (event) => {
+				this.initConnect();
+				console.log("Connection open ...");
+			};
+			// received
+			this.ws.onmessage = (event) => {
+				this.addFrom(event.data);
+				console.log("Received data: " + JSON.parse(event.data));
+			};
+			// close
+			this.ws.onclose = (event) => {
+				console.log("Connection closed ...");
+				this.ws.close();
+			};
+			// error
+			this.ws.onerror = (event) => {
+				console.log(event);
+			};
+		} else {
+			// 不支持 websocket
+	        this.open = false;
+	    }
+	}
+
+	// 初始化连接
+	initConnect(){
+		this.sendMsg("");
+	}
+
+	// 心跳  1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)
+	heartBeatInterval(){
+		this.setInterval(()=>{
+			// 1. checkLogin
+			
+			// 2. checkStatus
+			checkConnect();
+			// 3. uploadData
+			this.sendMsg("");
+			
+		}, this.hbInterval * 1000);
+	}
+
+	// 发送信息
+	sendMsg(content){
+		// 自动重连
+		this.checkConnect(content);
+	}
+
+	// 检测连接状态
+	checkConnect(content){
+		// 状态非连接，则重连
+		if (this.ws.readyState !== 1) {
+	        this.ws.close();
+	        this.initWebSocket();
+	        // 如果有内容，则发送
+	        if(content){
+	        	this.ws.send(content);
+	        }
+	        // 再次检测状态
+	        setTimeout( () => {
+	        	this.checkConnect();
+	        }, this.timeout * 1000);
+
+	        this.timeout = this.timeout * 2;
+	        if (this.timeout >= 60) {
+	            this.timeout = 60;
+	        }
+	        return false;
+	    } else {
+	    	// 如果有内容，则发送
+	        if(content){
+	        	this.ws.send(content);
+	        }
+	    	this.timeout = config.timeout;
+	    	return true;
+	    };
+		
+	}
 };
 
 export default CsChat; 

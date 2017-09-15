@@ -1,4 +1,5 @@
 {
+	"open":"true",
 	"name":"小智智能客服",
 	"description":"颜值爆表，既能萌萌哒，又能。。。",
 	"service":"",
@@ -7,6 +8,8 @@
 	"port":"8080",
 	"hbInterval":"5",
 	"showMsgType":"true",
+	"timeout":"3",
+	"hbInterval":"5",
 	"initMsg":[
 		{
 			"type":"top",
