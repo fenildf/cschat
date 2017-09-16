@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-15 21:38:54
+* @Last Modified time: 2017-09-18 17:39:22
 */
 
 import './cschat.less';
@@ -17,16 +17,25 @@ import message from './test.json';
 
 class CsChat {
 	constructor(avatar,uid) {  // 构造函数
+		/**
+		 * 公共常量
+		 */
 		// 是否启用此插件
 		this.open = config.open;
 		// 超时重连时间(s)
 		this.timeout = config.timeout;
 		// 心跳间隔(s)
 		this.hbInterval = config.hbInterval;
-
+		// 用户头像
 		this.avatar = avatar;
-
+		// 用户id
 		this.uid = uid;
+		// 时间管理器
+		this.timestamp = [];
+
+		/**
+		 * 初始化
+		 */
 		this.init();
 	}
 	
@@ -218,12 +227,32 @@ class CsChat {
 	scrollToLatest(){
 		this.eleContent[0].scrollTop = this.eleContent[0].scrollHeight;
 	}
+	// 自动打时间戳
+	// 原理：检测时间管理器数组，如果当前时间与最后一次时间戳相差超过两分钟，则添加
+	checkTimestamp(){
+		let now = Date.parse(new Date());
+		// 如果是第一次检测，直接添加当前时间
+		if(this.timestamp.length == 0){
+			this.timestamp.push(now);
+			this.addTimestamp(now);
+		}
+		// 否则检测与最后一次时间的时差
+		else{
+			let lastTime = this.timestamp[this.timestamp.length-1];
+			if( now - lastTime >= 60*1000 ){
+				this.timestamp.push(now);
+				this.addTimestamp(now);
+			}
+		}
+	}
+	
+
 	/**
 	 * ---------------------------------------------------------------
 	 */
 	
 	/**
-	 * 前端对4种消息的 DOM 操作
+	 * 前端对5种消息的 DOM 操作
 	 * ---------------------------------------------------------------
 	 */
 	// 添加置顶消息
@@ -256,12 +285,27 @@ class CsChat {
 		this.scrollToLatest();
 	}
 
+	// 添加时间戳
+	addTimestamp(val){
+		let content = '<li class="sys">';
+		let time = new Date(val).format("yyyy-MM-dd hh:mm:ss");
+		content = content + time + '</li>';
+
+		// 追加内容
+		this.ul.append(content);
+		// 滚动到最新消息
+		this.scrollToLatest();
+	}
+
 	// 添加用户发送消息
 	addTo(val,avatar){
 		if(!val){
 			alert("输入内容不能为空!");
 			return;
 		}
+		// 检测添加时间戳
+		this.checkTimestamp();
+
 		const content = '<li class="to">'+ val + '<img src="' + avatar + '" alt="avatar" /></li>';
 		// 追加内容
 		this.ul.append(content);
@@ -273,6 +317,9 @@ class CsChat {
 	// 添加小智发送消息
 	addFrom(val){
 		val = val? val : "系统出故障了哦!";
+		// 检测添加时间戳
+		this.checkTimestamp();
+
 		const content = '<li class="from">' + val + '</li>';
 		// 追加内容
 		this.ul.append(content);
@@ -280,7 +327,23 @@ class CsChat {
 		this.scrollToLatest();
 	}
 	/**
+	 * websocket
 	 * ---------------------------------------------------------------
+	 * 1. 连接建立（打开窗口）
+	 *    {'type':'init', 'uid':'19931128', 'url':'http://www.……', 'service':'CF' }
+	 * 2. 发送 & 接收数据
+	 *    发送
+	 *    {'type':'to', 'msg':'xxxxx' }
+	 *    接收
+	 *    {'type':'from', 'msg':'xxxxx' }
+	 *    {'type':'top', 'msg':'xxxxx' }
+	 *    {'type':'sys', 'msg':'xxxxx' }
+	 * 3. 连接关闭（关闭窗口）
+	 * 
+	 * 4. 心跳（1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)）
+	 *    {'type': 'hb', 'statistics':'' }
+	 *    {'type':'init', 'uin':'19931128', 'url':'http://www.……', 'service':'CF' }
+	 * 5.
 	 */
 	// websocket 初始化
 	initWebSocket(){
@@ -311,10 +374,16 @@ class CsChat {
 	        this.open = false;
 	    }
 	}
-
 	// 初始化连接
 	initConnect(){
-		this.sendMsg("");
+		let jsonObj =
+				{
+				    "type":"init",
+				    "uid":this.uid,
+				    "url":'http://www.……',
+				    "service":'CF'
+				};
+		this.sendMsg(JSON.stringify(jsonObj));
 	}
 
 	// 心跳  1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)
@@ -367,5 +436,48 @@ class CsChat {
 		
 	}
 };
+
+// 时间戳转换
+Date.prototype.format = function(data){ 
+	// 星期转换
+	var convertWeek = function(day, language){
+		var data;
+		switch(language){
+			case "ch":
+				data = ["日","一","二","三","四","五","六"];
+				return data[day];
+			case "en":
+				data = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+				return data[day];
+			default:
+				return day;
+		}
+	}
+	var o = {
+		"q+": Math.floor((this.getMonth() + 3) / 3), //quarter 
+		"M+": this.getMonth() + 1, //month 
+		"d+": this.getDate(), //day 
+		"h+": this.getHours(), //hour 
+		"m+": this.getMinutes(), //minute 
+		"s+": this.getSeconds(), //second 
+		"S": this.getMilliseconds(), //millisecond 3位
+		"T": convertWeek(this.getDay(),"ch"), //week 中文
+		"t": convertWeek(this.getDay(),"en"), //week 英文
+		"w": this.getDay(), //week number
+	}
+	// 单独处理年份
+	if (/(y+)/.test(data)) {
+		// RegExp.$1 第一个子匹配
+		data = data.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+	}
+	// 处理其他属性
+	for (var k in o) {
+		if (new RegExp("(" + k + ")").test(data)) {
+			// 按长度赋值
+			data = data.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+		}
+	}
+	return data;
+}
 
 export default CsChat; 
