@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-18 17:39:22
+* @Last Modified time: 2017-09-16 20:27:31
 */
 
 import './cschat.less';
@@ -394,6 +394,10 @@ class CsChat {
 			// 2. checkStatus
 			checkConnect();
 			// 3. uploadData
+			let jsonObj =
+				{
+
+				};
 			this.sendMsg("");
 			
 		}, this.hbInterval * 1000);
