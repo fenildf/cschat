@@ -2,7 +2,7 @@
 	"open":"true",
 	"name":"小智智能客服",
 	"description":"颜值爆表，既能萌萌哒，又能。。。",
-	"service":"",
+	"service":"CF",
 	"url":"",
 	"server":"ws://127.0.0.1:8000",
 	"port":"8080",

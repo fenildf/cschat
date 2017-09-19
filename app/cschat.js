@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-17 20:28:28
+* @Last Modified time: 2017-09-19 09:46:54
 */
 
 import './cschat.less';
@@ -169,8 +169,7 @@ class CsChat {
 		this.btnSubmit.click(()=>{
 			let content = this.inputUser.val();
 			this.addTo(content,this.avatar);
-			// this.addFrom();
-			this.sendMsg(content);
+			this.sendMsg("to",content);
 		});
 		// 监听回车按键发送消息
 		$(document).keydown((event)=>{
@@ -329,7 +328,7 @@ class CsChat {
 	/**
 	 * websocket
 	 * ---------------------------------------------------------------
-	 * 1. 连接建立（打开窗口）
+	 * 1. 连接建立（页面初始化）
 	 *    {'type':'init', 'uid':'19931128', 'url':'http://www.……', 'service':'CF' }
 	 * 2. 发送 & 接收数据
 	 *    发送
@@ -338,12 +337,9 @@ class CsChat {
 	 *    {'type':'from', 'msg':'xxxxx' }
 	 *    {'type':'top', 'msg':'xxxxx' }
 	 *    {'type':'sys', 'msg':'xxxxx' }
-	 * 3. 连接关闭（关闭窗口）
-	 * 
-	 * 4. 心跳（1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)）
+	 * 3. 心跳（1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)）
 	 *    {'type': 'hb', 'statistics':'' }
 	 *    {'type':'init', 'uin':'19931128', 'url':'http://www.……', 'service':'CF' }
-	 * 5.
 	 */
 	// websocket 初始化
 	initWebSocket(){
@@ -357,8 +353,8 @@ class CsChat {
 			};
 			// received
 			this.ws.onmessage = (event) => {
-				this.addFrom(event.data);
-				console.log("Received data: " + JSON.parse(event.data));
+				this.receiveMsg(event.data);
+				console.log("Received data ...");
 			};
 			// close
 			this.ws.onclose = (event) => {
@@ -376,14 +372,8 @@ class CsChat {
 	}
 	// 初始化连接
 	initConnect(){
-		let jsonObj =
-				{
-				    "type":"init",
-				    "uid":this.uid,
-				    "url":'http://www.……',
-				    "service":'CF'
-				};
-		this.sendMsg(JSON.stringify(jsonObj));
+		this.uid = this.uid?this.uid:0;
+		this.sendMsg("init");
 	}
 
 	// 心跳  1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)
@@ -404,9 +394,52 @@ class CsChat {
 	}
 
 	// 发送信息
-	sendMsg(content){
+	sendMsg(type,content){
+		let jsonObj = {};
+		switch(type){
+			case "init":
+				jsonObj =
+					{
+					    "type":"init",
+					    "uid":this.uid,
+					    "url":config.url,
+					    "service":config.service
+					};
+				break;
+			case "to":
+				jsonObj =
+					{
+					    "type":"to",
+					    "msg":content
+					};
+				break;
+			case "hb":
+				jsonObj =
+					{
+					    "type":"hb",
+					    "statistics":content
+					};
+				break;
+		}
+		content = JSON.stringify(jsonObj);
 		// 自动重连
 		this.checkConnect(content);
+	}
+
+	// 接收消息，收到json
+	receiveMsg(content){
+		let data = JSON.parse(content);
+		switch(data.type){
+			case "from":
+				this.addFromMsg(data.msg);
+				break;
+			case "top":
+				this.addTopMsg(data.msg);
+				break;
+			case "sys":
+				this.addSysMsg(data.msg);
+				break;
+		}
 	}
 
 	// 检测连接状态
