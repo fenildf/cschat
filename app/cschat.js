@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-19 09:46:54
+* @Last Modified time: 2017-09-22 10:37:33
 */
 
 import './cschat.less';
@@ -329,17 +329,27 @@ class CsChat {
 	 * websocket
 	 * ---------------------------------------------------------------
 	 * 1. 连接建立（页面初始化）
+	 *    发送
 	 *    {'type':'init', 'uid':'19931128', 'url':'http://www.……', 'service':'CF' }
+	 *    接收
+	 *    {'code':'200', 'type':'init', 'result':'alert("成功");'}
 	 * 2. 发送 & 接收数据
 	 *    发送
 	 *    {'type':'to', 'msg':'xxxxx' }
 	 *    接收
-	 *    {'type':'from', 'msg':'xxxxx' }
-	 *    {'type':'top', 'msg':'xxxxx' }
-	 *    {'type':'sys', 'msg':'xxxxx' }
+	 *    {'code':'200', 'type':'from', 'msg':'xxxxx', 'result':'' }
+	 *    {'code':'200', 'type':'top', 'msg':'xxxxx', 'result':'' }
+	 *    {'code':'200', 'type':'sys', 'msg':'xxxxx', 'result':'alert("xxx");' }
 	 * 3. 心跳（1.检查登录态  2.连接状态检查并重连  3.上报用户操作数据(心跳msg)）
+	 *    发送
 	 *    {'type': 'hb', 'statistics':'' }
 	 *    {'type':'init', 'uin':'19931128', 'url':'http://www.……', 'service':'CF' }
+	 *    接收
+	 *    {'code':'200', 'type':'hb', 'result':'' }
+	 *    {'code':'200', 'type':'init', 'result':'alert("成功");'}
+	 * 4. 错误返回，code非200即错误返回，直接执行result
+	 *    {'code':'500', 'result':'alert("执行失败");' }
+	 * 
 	 */
 	// websocket 初始化
 	initWebSocket(){
