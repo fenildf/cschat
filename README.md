@@ -17,7 +17,13 @@ UI >= IE9
 
 ## 3 效果图
 
-![小智](doc/pic/小智.gif)
+PC端
+
+![小智](doc/pic/gif02.gif)
+
+移动端
+
+![小智](doc/pic/gif03.gif)
 
 效果图01
 

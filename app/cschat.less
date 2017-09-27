@@ -1,4 +1,5 @@
-#pc-img{
+#cschat-pc-img{
+	display: none;
 	position: fixed;
 	right: 0;
 	// img {
@@ -22,7 +23,7 @@
 	}
 }
 
-#pc {
+#cschat-pc {
 	display: none;
 	position: fixed;
 	right: -400px;
@@ -53,6 +54,7 @@
 			}
 			div:nth-child(1){
 			    line-height: 67px;
+			    margin: auto;
 			  	// img {
 				// 	width: 45px;
 				// 	height: 45px;
@@ -130,7 +132,206 @@
 			}
 			.to{
 				width: 60%;
-				margin-left: 27%;
+				margin-left: auto;
+				margin-right: 55px;
+				background-color: #bde0f6;
+				position: relative;
+
+				img {
+					width: 32px;
+					height: 32px;
+					position: absolute;
+					top: 0px;
+					right: -43px;
+					border-radius: 16px;
+				}
+			}
+			.to::after{
+				content: ' ';
+				border-top: 5px solid transparent;
+				border-bottom: 5px solid transparent;
+				border-left: 8px solid #bde0f6;
+				position: absolute;
+				right: -8px;
+				top: 10px;
+			}
+			li.sys{
+				margin: 5px auto;
+				font-size: 12px;
+				color: #adacac;
+				background-color: #f5f5f5;
+				text-align: center;
+				width: max-content;
+				border-radius: 25px;
+				padding: 5px;
+				padding-left: 15px;
+				padding-right: 15px;
+			}
+		}
+		// 编辑区
+		>div:nth-child(4){
+			background-color: #eff3f9;
+			height: 20%;
+			>div {
+				background-color: transparent;
+			}
+			// 输入框
+			div:nth-child(1){
+				height: 55px;
+				padding-top: 5px;
+				padding-bottom: 5px;
+				textarea{
+					width: 100%;
+					height: 100%;
+					background-color: transparent;
+					border: none;
+					outline:none;
+					resize:none;
+				}
+			}
+			// 提交按钮
+			div:nth-child(3){
+				text-align: right;
+				padding-right: 7px;
+				button{
+					border: none;
+					padding-top: 5px;
+					padding-bottom: 5px;
+				}
+			}
+
+
+		}
+
+
+	}
+	
+}
+
+#cschat-mobile-img{
+	display: none;
+	position: fixed;
+	left: 15px;
+	bottom: 15px;
+	div{
+		cursor: pointer;
+		background-image: url(images/xiaozhi02.png);
+		width: 46px;
+		height: 46px;
+		opacity: 0.6;
+	}
+	div:hover{
+		opacity: 1;
+	}
+}
+
+#cschat-mobile {
+	display: none;
+	position: fixed;
+	width: 100%;
+	bottom: -450px;
+
+	.container-fluid{
+		height: 450px;
+		border: 1px solid #EEEEEE;
+		border-right: none;
+		background-color: #fff;
+		position: relative;
+		// 覆盖
+		padding-right: 0;
+		padding-left: 0;
+
+		.row{
+		    margin-right: 0px;
+			margin-left: 0px;
+			overflow: hidden;
+		}
+		// 标题
+		>div:nth-child(1){
+			background-color: #d2e1f2;
+			height: 15%;
+			>div{
+				height: 67px;
+				background-color: transparent;
+			}
+			div:nth-child(1){
+			    line-height: 67px;
+			    margin: auto;
+			  	div{
+			  		background-image: url(images/xiaozhi02.png);
+					width: 46px;
+					height: 46px;
+				    margin-top: 12px;
+			  	}
+			}
+			div:nth-child(2){
+				h4{
+					margin-top: 15px;
+					margin-bottom: 5px;
+				}
+				small {
+					color:#a7a7a7;
+				}
+			}
+
+		}
+		// 置顶消息
+		>div:nth-child(2){
+			width: 100%;
+			position: absolute;
+			z-index: 9999;
+			
+			.alert {
+				width: 100%;
+				padding: 10px;
+				padding-right: 35px;
+				margin-bottom: 0;
+			    border-radius: 0;
+			}
+
+		}
+		// 内容
+		>div:nth-child(3){
+			background-color: #fff;
+			height: 65%;
+			overflow-y: auto;
+			overflow-x: hidden;
+			padding-right: 0;
+			
+			ul {
+				margin-top: 0;
+				margin-bottom: 0;
+				padding: 5px;
+			}
+			li {
+				color: #696969;
+			    margin: 8px;
+			    padding: 8px;
+				list-style: none;
+				white-space:normal; 
+		        word-break : break-all; 
+		        word-wrap: break-word;
+	            border-radius: 8px;
+			}
+			.from{
+				width: 60%;
+				margin-right: 40%;
+				background-color: #d7d7df;
+				position: relative;
+			}
+			.from::after{
+				content: ' ';
+				border-top: 5px solid transparent;
+				border-bottom: 5px solid transparent;
+				border-right: 8px solid #d7d7df;
+				position: absolute;
+				left: -8px;
+				top: 10px;
+			}
+			.to{
+				width: 60%;
+				margin-left: auto;
+				margin-right: 55px;
 				background-color: #bde0f6;
 				position: relative;
 

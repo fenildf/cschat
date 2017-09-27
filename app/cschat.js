@@ -2,11 +2,10 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-22 10:37:33
+* @Last Modified time: 2017-09-27 16:33:10
 */
 
 import './cschat.less';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
@@ -68,11 +67,53 @@ class CsChat {
 	// 初始化模板
 	initTpl(){
 		const tpl = `
-			<div id="pc-img">
+			<div id="cschat-pc-img">
 				<!-- <img src="xiaozhi01.png" /> -->
 				<div></div>
 			</div>
-			<div id="pc">
+			<div id="cschat-pc">
+				<div class="container-fluid">
+					<!-- 标题 start -->
+					<div class="row">
+						<div class="col-xs-2">
+							<!-- <img src="xiaozhi02.png" height="46" width="46" alt="" /> -->
+							<div></div>
+						</div>
+						<div class="col-xs-10">
+							<h4>${config.name}</h4>
+							<small>${config.description}</small>
+						</div>
+					</div>
+					<!-- 标题 end -->
+					<!-- 置顶消息 start -->
+					<div class="row"></div>
+					<!-- 置顶消息 end -->
+					<!-- 内容 start -->
+					<div class="row">
+						<ul>
+							<!-- <li class="from">...</li>
+							<li class="to">...<img src="avatar.jpg" alt="avatar"></li>
+							<li class="sys">...</li> -->
+						</ul>
+					</div>
+					<!-- 内容 end -->
+					<!-- 编辑区 start -->
+					<div class="row">
+						<!-- 编辑框 -->
+						<div class="col-xs-12"><textarea class="userInput"></textarea></div>
+						<!-- 功能按钮 -->
+						<div class="col-xs-8"></div>
+						<!-- 提交按钮 -->
+						<div class="col-xs-4"><button class="btn btn-primary">发送</button></div>
+					</div>
+					<!-- 编辑区 end -->
+				</div>
+			</div>
+			<div id="cschat-mobile-img">
+				<!-- <img src="xiaozhi01.png" /> -->
+				<div></div>
+			</div>
+			<div id="cschat-mobile">
 				<div class="container-fluid">
 					<!-- 标题 start -->
 					<div class="row">
@@ -116,22 +157,39 @@ class CsChat {
 	}
 	// 获取页面元素
 	getElements() {
-		this.xzAvatar = $("#pc-img div"); // 小智头像
-		this.dialog = $("#pc"); // 小智会话框
-		this.alertArea = $("#pc .container-fluid>.row:nth-child(2)"); // 置顶消息区域
-		this.eleContent = $("#pc .container-fluid>.row:nth-child(3)"); // 内容区
-		this.ul = $("#pc .container-fluid>.row:nth-child(3) ul"); // 消息列表 ul
-		this.btnSubmit =  $("#pc .row:nth-child(4) button:nth-child(1)"); // 提交按钮
-		this.inputUser = $(".userInput"); // 用户输入框
+		// PC
+		if(clientType()==1){
+			this.xzAvatar = $("#cschat-pc-img div"); // 小智头像
+			this.dialog = $("#cschat-pc"); // 小智会话框
+			this.alertArea = $("#cschat-pc .container-fluid>.row:nth-child(2)"); // 置顶消息区域
+			this.eleContent = $("#cschat-pc .container-fluid>.row:nth-child(3)"); // 内容区
+			this.ul = $("#cschat-pc .container-fluid>.row:nth-child(3) ul"); // 消息列表 ul
+			this.btnSubmit =  $("#cschat-pc .row:nth-child(4) button:nth-child(1)"); // 提交按钮
+			this.inputUser = $("#cschat-pc .userInput"); // 用户输入框
+		}
+		// mobile
+		if(clientType()==2){
+			this.xzAvatar = $("#cschat-mobile-img div"); // 小智头像
+			this.dialog = $("#cschat-mobile"); // 小智会话框
+			this.alertArea = $("#cschat-mobile .container-fluid>.row:nth-child(2)"); // 置顶消息区域
+			this.eleContent = $("#cschat-mobile .container-fluid>.row:nth-child(3)"); // 内容区
+			this.ul = $("#cschat-mobile .container-fluid>.row:nth-child(3) ul"); // 消息列表 ul
+			this.btnSubmit =  $("#cschat-mobile .row:nth-child(4) button:nth-child(1)"); // 提交按钮
+			this.inputUser = $("#cschat-mobile .userInput"); // 用户输入框
+		}
 	}
 	
 	// 初始化页面布局
 	initLayout(){
+		this.xzAvatar.parent().css("display","block");
 		this.clientHeight = $(window).height(); // 浏览器可视区域高度
-		let imgHeight = ( this.clientHeight - this.xzAvatar.height() ) / 2 - 70;
-		let dialogHeight =  ( this.clientHeight - this.dialog.height() ) / 2;
-		this.xzAvatar.css("top",imgHeight);
-		this.dialog.css("top",dialogHeight);
+		// PC端需要适应高度
+		if(clientType()==1){
+			let imgHeight = ( this.clientHeight - this.xzAvatar.height() ) / 2 - 70;
+			let dialogHeight = ( this.clientHeight - this.dialog.height() ) / 2;
+			this.xzAvatar.css({"top":imgHeight});
+			this.dialog.css("top",dialogHeight);
+		}
 		// 隐藏滚动条
 		this.eleContent.css("marginRight","-"+(this.eleContent.width()-this.ul.width())+"px");
 	}
@@ -159,10 +217,20 @@ class CsChat {
 	}
 	initEvent(){
 		// 设置小智头像点击事件
-		const _this = this;
+		// const _this = this;
 		this.xzAvatar.click(()=>{
 			this.dialog.css("display","block");
-			this.dialog.animate({"right":"0"}, 500);
+			if(clientType()==1){
+				this.dialog.animate({"right":"0"}, 500);
+			}
+			if(clientType()==2){
+				// 横屏状态下禁止使用
+				if(window.screen.width > window.screen.height){
+					alert("请在竖屏状态下使用哦");
+					return;
+				}
+				this.dialog.animate({"bottom":"0"}, 500);
+			}
 			this.msgAdjust();
 		});
 		// 提交按钮
@@ -199,7 +267,12 @@ class CsChat {
 		$(document).on("click",(e)=>{
 			if (e.target!= this.xzAvatar[0] && e.target!= this.dialog[0] && !$.contains(this.dialog[0], e.target)){
 				this.dialog.fadeOut(500,()=>{
-					this.dialog.css("right","-400px");
+					if(clientType()==1){
+						this.dialog.css("right","-400px");
+					}
+					if(clientType()==2){
+						this.dialog.css("bottom","-450px");
+					}
 				});
 			}
 		});
@@ -244,7 +317,6 @@ class CsChat {
 			}
 		}
 	}
-	
 
 	/**
 	 * ---------------------------------------------------------------
@@ -526,5 +598,18 @@ Date.prototype.format = function(data){
 	}
 	return data;
 }
+
+/**
+ * 判断客户端类型
+ * 1 PC
+ * 2 mobile phone
+ */
+function clientType(){
+	if('ontouchstart' in document){
+		return 2;
+	}
+	return 1;
+}
+
 
 export default CsChat; 
