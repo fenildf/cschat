@@ -4,7 +4,7 @@
 	"description":"颜值爆表，既能萌萌哒，又能。。。",
 	"service":"CF",
 	"url":"",
-	"server":"ws://127.0.0.1:8000",
+	"server":"ws://182.254.243.13",
 	"port":"8080",
 	"hbInterval":"5",
 	"showMsgType":"true",

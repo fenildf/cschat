@@ -7,7 +7,7 @@ module.exports = {
     entry: __dirname + "/app/main.js",
     output: {
         path: __dirname + "/build",
-        filename: "[name]-[hash:8].js",
+        filename: "cschat-[hash:8].js",
         chunkFilename:'chunk.[name].js'
     },
     devtool: 'none',

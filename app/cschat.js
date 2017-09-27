@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-27 16:33:10
+* @Last Modified time: 2017-09-27 17:59:54
 */
 
 import './cschat.less';
@@ -427,20 +427,20 @@ class CsChat {
 	initWebSocket(){
 		if (window.WebSocket) {
 
-			this.ws = new WebSocket(config.server);
+			this.ws = new WebSocket(config.server+":"+config.port);
 			// open
 			this.ws.onopen = (event) => {
 				this.initConnect();
-				console.log("Connection open ...");
+				console.log("cschat - Connection open ...");
 			};
 			// received
 			this.ws.onmessage = (event) => {
 				this.receiveMsg(event.data);
-				console.log("Received data ...");
+				console.log("cschat - Received data ...");
 			};
 			// close
 			this.ws.onclose = (event) => {
-				console.log("Connection closed ...");
+				console.log("cschat - Connection closed ...");
 				this.ws.close();
 			};
 			// error
@@ -508,19 +508,34 @@ class CsChat {
 		this.checkConnect(content);
 	}
 
-	// 接收消息，收到json
+	// 接收消息，收到json，处理返回结果
 	receiveMsg(content){
+		const code = {
+			200:"success",
+			500:"failed"
+		}
 		let data = JSON.parse(content);
-		switch(data.type){
-			case "from":
-				this.addFromMsg(data.msg);
+		if(data.code == "200"){
+			switch(data.type){
+				case "init":
+
 				break;
-			case "top":
-				this.addTopMsg(data.msg);
+				case "from":
+					this.addFromMsg(data.msg);
+					break;
+				case "top":
+					this.addTopMsg(data.msg);
+					break;
+				case "sys":
+					this.addSysMsg(data.msg);
+					break;
+				case "hb":
+
 				break;
-			case "sys":
-				this.addSysMsg(data.msg);
-				break;
+			}
+			eval(data.result);
+		}else if(data.code == "500"){
+			eval(data.result);
 		}
 	}
 
@@ -554,6 +569,7 @@ class CsChat {
 	    };
 		
 	}
+
 };
 
 // 时间戳转换
