@@ -2,7 +2,7 @@
 * @Author: victorsun
 * @Date:   2017-09-08 09:56:26
 * @Last Modified by:   victorsun
-* @Last Modified time: 2017-09-27 17:59:54
+* @Last Modified time: 2017-10-13 17:18:43
 */
 
 import './cschat.less';
@@ -483,7 +483,7 @@ class CsChat {
 				jsonObj =
 					{
 					    "type":"init",
-					    "uid":this.uid,
+					    "uid":this.uid.toString(),
 					    "url":config.url,
 					    "service":config.service
 					};
