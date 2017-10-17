@@ -521,7 +521,7 @@ class CsChat {
 
 				break;
 				case "from":
-					this.addFromMsg(data.msg);
+					this.addFrom(data.msg);
 					break;
 				case "top":
 					this.addTopMsg(data.msg);
